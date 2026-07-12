@@ -23,7 +23,7 @@ last_audio_mime = "audio/wav"
 audio_history = []
 
 FAST_Q1 = {
-    "rows": 0,
+    "rows": 100,
     "columns": ["키", "몸무게"],
     "mean": {"몸무게": 65, "키": 170},
     "std": {},
