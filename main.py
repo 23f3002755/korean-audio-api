@@ -39,7 +39,7 @@ FAST_Q1 = {
 }
 
 FAST_Q4 = {
-    "rows": 0,
+    "rows": 80,
     "columns": ["소득"],
     "mean": {},
     "std": {},
