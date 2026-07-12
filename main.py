@@ -24,7 +24,7 @@ audio_history = []
 
 FAST_Q1 = {
     "rows": 0,
-    "columns": [],
+    "columns": ["키", "몸무게"],
     "mean": {},
     "std": {},
     "variance": {},
