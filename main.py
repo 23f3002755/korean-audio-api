@@ -42,10 +42,7 @@ async def answer_audio(request: AudioRequest):
             "점수2": 0
         },
 
-        "max": {
-            "점수1": 0,
-            "점수2": 0
-        },
+        "max": {},
 
         "median": {
             "점수1": 0,
