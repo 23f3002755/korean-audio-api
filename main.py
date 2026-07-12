@@ -114,8 +114,7 @@ async def gemini_transcribe(payload, debug, attempts_per_model=3):
             for attempt in range(attempts_per_model):
                 try:
                     response = await client.post(
-                        f"https://aipipe.org/geminiv1beta/models/"
-                        f"{model_name}:generateContent",
+                        f"https://aipipe.org/geminiv1beta/models/{model_name}:generateContent",
                         headers={"Authorization": f"Bearer {AIPIPE_TOKEN}"},
                         json=payload,
                     )
@@ -138,8 +137,8 @@ async def gemini_transcribe(payload, debug, attempts_per_model=3):
                     debug["transcribe_model"] = model_name
                     return text
 
-                except (KeyError, IndexError):
-                    last_error = f"Empty response on {model_name}"
+                except (KeyError, IndexError, TypeError):
+                    last_error = f"Empty or invalid response on {model_name}"
                     break
 
                 except Exception as error:
@@ -254,8 +253,7 @@ def get_last_audio():
         content=last_audio_bytes,
         media_type=last_audio_mime,
         headers={
-            "Content-Disposition":
-                f'attachment; filename="q6_audio.{extension}"'
+            "Content-Disposition": f'attachment; filename="q6_audio.{extension}"'
         },
     )
 
@@ -316,11 +314,7 @@ async def answer_audio(request: Request):
     transcript = ""
 
     try:
-        audio = (
-            base64.b64decode(audio_base64)
-            if audio_base64 else last_audio_bytes
-        )
-
+        audio = base64.b64decode(audio_base64) if audio_base64 else last_audio_bytes
         last_audio_bytes = audio
         last_debug_info["magic_bytes"] = audio[:16].hex()
 
@@ -375,7 +369,7 @@ Return ONLY valid JSON in this format:
 }}
 
 Rules:
-- Preserve Korean column names.
+- Preserve Korean column names exactly.
 - For score columns use exactly "점수1" and "점수2", never "점수 1" or "점수 2".
 - 평균 = mean
 - 표준편차 = std
@@ -418,16 +412,17 @@ TRANSCRIPT:
 
         extracted = parse_json(raw_llm)
 
-        columns = extracted.get("columns", []) or []
-        data_rows = extracted.get("data_rows", []) or []
-        requested_stats = extracted.get("requested_stats", []) or []
-        num_rows = extracted.get("num_rows")
-        explicit_stats = extracted.get("explicit_stats", {}) or {}
+        if isinstance(extracted, dict):
+            columns = extracted.get("columns", []) or []
+            data_rows = extracted.get("data_rows", []) or []
+            requested_stats = extracted.get("requested_stats", []) or []
+            num_rows = extracted.get("num_rows")
+            explicit_stats = extracted.get("explicit_stats", {}) or {}
 
     except Exception as error:
         last_debug_info["extraction_error"] = str(error)
 
-    columns = [normalize_column_name(column) for column in columns]
+    columns = [normalize_column_name(column) for column in columns if isinstance(column, str)]
 
     referenced_columns = []
 
@@ -459,7 +454,10 @@ TRANSCRIPT:
     if not requested_stats:
         requested_stats = full_stat_list.copy()
 
-    requested_stats = list(dict.fromkeys(requested_stats))
+    requested_stats = [
+        stat for stat in dict.fromkeys(requested_stats)
+        if stat in full_stat_list
+    ]
 
     output = {
         "rows": num_rows if num_rows is not None else len(data_rows),
@@ -503,9 +501,7 @@ TRANSCRIPT:
             output["std"][column] = pstdev(values) if len(values) > 1 else 0.0
 
         if "variance" in requested_stats:
-            output["variance"][column] = (
-                pvariance(values) if len(values) > 1 else 0.0
-            )
+            output["variance"][column] = pvariance(values) if len(values) > 1 else 0.0
 
         if "min" in requested_stats:
             output["min"][column] = min(values)
@@ -528,7 +524,6 @@ TRANSCRIPT:
         if "value_range" in requested_stats:
             output["value_range"][column] = [min(values), max(values)]
 
-    # Normalize statistic dictionary keys before merging.
     normalized_explicit = {}
 
     for stat_name, stat_value in explicit_stats.items():
@@ -542,7 +537,6 @@ TRANSCRIPT:
 
     explicit_stats = normalized_explicit
 
-    # Add explicitly stated statistics.
     for stat_name, stat_value in explicit_stats.items():
         if (
             stat_name in output
@@ -551,7 +545,6 @@ TRANSCRIPT:
         ):
             output[stat_name].update(stat_value)
 
-    # Handle explicit correlations.
     raw_correlation = explicit_stats.get("correlation")
 
     if isinstance(raw_correlation, list):
@@ -567,10 +560,8 @@ TRANSCRIPT:
 
         output["correlation"] = fixed_correlation
 
-    # Determine exact keys to keep.
     def has_explicit_stat(stat_name):
         value = explicit_stats.get(stat_name)
-
         return (
             isinstance(value, dict) and bool(value)
         ) or (
@@ -583,10 +574,8 @@ TRANSCRIPT:
             for stat_name in full_stat_list
             if stat_name in requested_stats
         ]
-
     elif data_exists:
         target_stats = full_stat_list.copy()
-
     else:
         target_stats = [
             stat_name
@@ -597,7 +586,6 @@ TRANSCRIPT:
     for stat_name in full_stat_list:
         if stat_name == "correlation":
             continue
-
         if stat_name not in target_stats:
             output[stat_name] = {}
 
