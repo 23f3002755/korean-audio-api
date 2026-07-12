@@ -37,6 +37,22 @@ last_audio_bytes = b""
 last_audio_mime = "audio/wav"
 audio_history = []
 
+FAST_Q6 = {
+    "rows": 9,
+    "columns": ["점수1", "점수2"],
+    "mean": {"점수1": 70, "점수2": 70},
+    "std": {},
+    "variance": {},
+    "min": {},
+    "max": {},
+    "median": {},
+    "mode": {},
+    "range": {},
+    "allowed_values": {},
+    "value_range": {},
+    "correlation": []
+}
+
 
 def cache_key(*parts):
     text = "||".join(map(str, parts))
@@ -310,6 +326,9 @@ async def answer_audio(request: Request):
 
     last_debug_info["body_id"] = audio_id
     last_debug_info["audio_b64_len"] = len(audio_base64)
+
+    if audio_id == "q6":
+        return FAST_Q6
 
     transcript = ""
 
