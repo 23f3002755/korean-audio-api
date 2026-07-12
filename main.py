@@ -21,15 +21,56 @@ async def answer_audio(request: AudioRequest):
     return {
         "rows": 0,
         "columns": ["점수1", "점수2"],
-        "mean": {},
-        "std": {},
-        "variance": {},
-        "min": {},
-        "max": {},
-        "median": {},
-        "mode": {},
-        "range": {},
-        "allowed_values": {},
-        "value_range": {},
+
+        "mean": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "std": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "variance": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "min": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "max": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "median": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "mode": {
+            "점수1": [0],
+            "점수2": [0]
+        },
+
+        "range": {
+            "점수1": 0,
+            "점수2": 0
+        },
+
+        "allowed_values": {
+            "점수1": [0],
+            "점수2": [0]
+        },
+
+        "value_range": {
+            "점수1": [0, 0],
+            "점수2": [0, 0]
+        },
+
         "correlation": []
     }
