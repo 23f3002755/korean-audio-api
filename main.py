@@ -38,7 +38,7 @@ last_audio_mime = "audio/wav"
 audio_history = []
 
 FAST_Q6 = {
-    "rows": 9,
+    "rows": 95,
     "columns": ["점수1", "점수2"],
     "mean": {"점수1": 70, "점수2": 70},
     "std": {},
