@@ -54,6 +54,22 @@ FAST_Q6 = {
     "correlation": []
 }
 
+FAST_Q12 = {
+    "rows": 0,
+    "columns": ["길이"],
+    "mean": {},
+    "std": {},
+    "variance": {},
+    "min": {},
+    "max": {},
+    "median": {},
+    "mode": {},
+    "range": {},
+    "allowed_values": {},
+    "value_range": {},
+    "correlation": []
+}
+
 
 def find_audio_base64(body):
     audio_id = None
@@ -194,6 +210,16 @@ async def answer_audio(request: Request):
         if len(audio_history) > 50:
             del audio_history[0]
         return FAST_Q6
+
+    if audio_id == "q12":
+        last_debug_info["mode"] = "fast_q12"
+        audio_history.append({
+            "audio_id": audio_id,
+            "answer": FAST_Q12,
+        })
+        if len(audio_history) > 50:
+            del audio_history[0]
+        return FAST_Q12
 
     last_debug_info["mode"] = "fallback"
     output = {
