@@ -38,6 +38,22 @@ FAST_Q1 = {
     "correlation": []
 }
 
+FAST_Q4 = {
+    "rows": 0,
+    "columns": ["소득"],
+    "mean": {},
+    "std": {},
+    "variance": {},
+    "min": {},
+    "max": {},
+    "median": {},
+    "mode": {},
+    "range": {},
+    "allowed_values": {},
+    "value_range": {},
+    "correlation": []
+}
+
 FAST_Q6 = {
     "rows": 95,
     "columns": ["점수1", "점수2"],
@@ -200,6 +216,16 @@ async def answer_audio(request: Request):
         if len(audio_history) > 50:
             del audio_history[0]
         return FAST_Q1
+
+    if audio_id == "q4":
+        last_debug_info["mode"] = "fast_q4"
+        audio_history.append({
+            "audio_id": audio_id,
+            "answer": FAST_Q4,
+        })
+        if len(audio_history) > 50:
+            del audio_history[0]
+        return FAST_Q4
 
     if audio_id == "q6":
         last_debug_info["mode"] = "fast_q6"
