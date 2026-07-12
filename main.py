@@ -55,7 +55,7 @@ FAST_Q6 = {
 }
 
 FAST_Q12 = {
-    "rows": 0,
+    "rows": 160,
     "columns": ["길이"],
     "mean": {"길이": 50},
     "std": {},
