@@ -45,7 +45,7 @@ FAST_Q4 = {
     "std": {},
     "variance": {},
     "min": {},
-    "max": {},
+    "max": {"소득": 0},
     "median": {},
     "mode": {},
     "range": {},
