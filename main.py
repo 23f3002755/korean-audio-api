@@ -177,7 +177,7 @@ def pearson_correlation(x, y):
 
     numerator = sum((a - mean_x) * (b - mean_y) for a, b in zip(x, y))
     denominator_x = sum((a - mean_x) ** 2 for a in x) ** 0.5
-    denominator_y = sum((b - mean_y) ** 2 for b, b2 in zip(y, y))
+    denominator_y = sum((b - mean_y) ** 2 for b in y) ** 0.5
 
     if denominator_x == 0 or denominator_y == 0:
         return 0.0
