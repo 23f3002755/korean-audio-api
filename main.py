@@ -62,10 +62,7 @@ async def answer_audio(request: AudioRequest):
             "점수2": 0
         },
 
-        "allowed_values": {
-            "점수1": [0],
-            "점수2": [0]
-        },
+        "allowed_values": {},
 
         "value_range": {
             "점수1": [0, 0],
